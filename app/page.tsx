@@ -1,51 +1,93 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { calculateFromGross, calculateFromNet } from "@/service/tax-service";
+import { getExchangeRate } from "@/service/exchange-service";
 import { SalaryForm } from "@/components/calculator/SalaryForm";
 import { TaxBreakdown } from "@/components/calculator/TaxBreakdown";
 import { ResultCard } from "@/components/calculator/ResultCard";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 
 export default function CalculatorPage() {
-  // 1. State Management
+  // --- State ---
   const [inputValue, setInputValue] = useState<number>(5000);
   const [mode, setMode] = useState<"brut" | "net">("brut");
   const [currency, setCurrency] = useState<"RON" | "EUR">("RON");
   const [isH2, setIsH2] = useState(false);
+  const [exchangeRate, setExchangeRate] = useState<number>(4.97);
+  const [eurExchangeRate, setEurExchangeRate] = useState<number>(4.97);
+  const [isLoadingRate, setIsLoadingRate] = useState(true);
 
-  // 2. Logic Orchestration
-  // We calculate the breakdown on every render based on the current state.
-  const results = mode === "brut"
-      ? calculateFromGross(inputValue, currency, isH2)
-      : calculateFromNet(inputValue, currency, isH2);
+  // --- Effects ---
+  useEffect(() => {
+    async function updateEurRate() {
+      try {
+        const rate = await getExchangeRate("EUR");
+        setEurExchangeRate(rate);
+      } catch (error) {
+        console.error("Failed to fetch rate", error);
+      } finally {
+        setIsLoadingRate(false);
+      }
+    }
+    updateEurRate();
+  }, []);
+
+  // --- Effects ---
+  useEffect(() => {
+    async function updateRate() {
+      try {
+        const rate = await getExchangeRate(currency);
+        setExchangeRate(rate);
+      } catch (error) {
+        console.error("Failed to fetch rate", error);
+      } finally {
+        setIsLoadingRate(false);
+      }
+    }
+    updateRate();
+  }, [currency]);
+
+  // --- Memoized Calculation ---
+  // We only re-run this heavy math when these specific dependencies change
+  const results = useMemo(() => {
+    console.log(calculateFromGross(inputValue, exchangeRate, eurExchangeRate, isH2));
+    console.log(calculateFromNet(inputValue, exchangeRate, eurExchangeRate, isH2));
+    return mode === "brut"
+        ? calculateFromGross(inputValue, exchangeRate, eurExchangeRate, isH2)
+        : calculateFromNet(inputValue, exchangeRate, eurExchangeRate, isH2);
+  }, [inputValue, mode, isH2, exchangeRate, currency]);
 
   return (
       <main className="min-h-screen bg-slate-50 py-12 px-4 md:px-8">
         <div className="max-w-5xl mx-auto space-y-10">
 
           {/* Header Section */}
-          <header className="text-center md:text-left space-y-2">
-            <div className="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full mb-2">
-              FISCAL 2026 UPDATE
+          <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <Badge variant="secondary" className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100">
+                  FISCAL 2026
+                </Badge>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+                Calculator Salariu <span className="text-indigo-600">RO</span>
+              </h1>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
-              Calculator Salariu  <span className="text-indigo-600">Romania</span>
-            </h1>
-            <p className="text-slate-500 text-lg max-w-2xl">
-              Calculați salariul net, taxele și costurile totale de angajare conform
-              Codului Fiscal actualizat (CIM).
+            <p className="text-slate-500 text-sm md:text-right max-w-xs italic">
+              Calculați salariul net și taxele conform grilei de impozitare 2026.
             </p>
           </header>
 
-          {/* Calculator Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-            {/* Left Column: Configuration (5 units wide) */}
+            {/* Settings Column */}
             <div className="lg:col-span-5 space-y-6">
               <SalaryForm
                   value={inputValue}
+                  exchangeRate={exchangeRate}
                   onChange={setInputValue}
                   mode={mode}
                   onModeChange={setMode}
@@ -53,37 +95,21 @@ export default function CalculatorPage() {
                   onCurrencyChange={setCurrency}
               />
 
-              {/* Fiscal Period Switcher */}
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between transition-all hover:border-indigo-200">
                 <div className="space-y-1">
                   <Label className="font-bold text-slate-800">Varianta Iulie 2026</Label>
-                  <p className="text-xs text-slate-500">Include pragul de 4.325 RON brut.</p>
+                  <p className="text-xs text-slate-500">Ajustare prag salariu minim (4.325 RON)</p>
                 </div>
                 <Switch checked={isH2} onCheckedChange={setIsH2} />
               </div>
-
-              <p className="text-[11px] text-slate-400 italic px-2">
-                * Acest calculator oferă o estimare bazată pe valorile standard de deducere personală
-                și cotele de CAS, CASS și Impozit pe Venit pentru anul 2026.
-              </p>
             </div>
 
-            {/* Right Column: Results (7 units wide) */}
+            {/* Results Column */}
             <div className="lg:col-span-7 space-y-6">
-              {/* The ResultCard highlights the "Money in Hand" */}
+              {/* Show Net in the currency the user preferred */}
               <ResultCard net={results.net} />
 
-              {/* Detailed table of all tax subtractions */}
               <TaxBreakdown data={results} />
-
-              {/* Quick Conversion Info for User Context */}
-              {currency === 'RON' && (
-                  <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-xl text-center">
-                    <p className="text-sm text-indigo-600 font-medium">
-                      Salariul tău valorează aproximativ <span className="font-bold">{results.net.eur} EUR</span> lunar.
-                    </p>
-                  </div>
-              )}
             </div>
           </div>
         </div>

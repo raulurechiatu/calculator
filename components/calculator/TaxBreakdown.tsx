@@ -1,58 +1,41 @@
 import { SalaryBreakdown } from "@/types/tax";
+import { Separator } from "@/components/ui/separator";
+import { BreakdownRow } from "./breakdown/BreakdownRow";
+import { BreakdownSection } from "./breakdown/BreakdownSection";
+import { TotalCostFooter } from "./breakdown/TotalCostFooter";
 
-interface TaxBreakdownProps {
-    data: SalaryBreakdown;
-}
-
-export const TaxBreakdown = ({ data }: TaxBreakdownProps) => {
-    const taxRows = [
-        { label: "CAS (Pensie 25%)", ron: data.cas.ron, eur: data.cas.eur },
-        { label: "CASS (Sănătate 10%)", ron: data.cass.ron, eur: data.cass.eur },
-        { label: "Impozit pe Venit (10%)", ron: data.incomeTax.ron, eur: data.incomeTax.eur },
-        { label: "Deducere Personală", ron: data.deduction.ron, eur: data.deduction.eur, neutral: true },
-    ];
+export const TaxBreakdown = ({ data }: { data: SalaryBreakdown }) => {
+    const camRon = data.companyTotal.ron - data.gross.ron;
+    const camEur = data.companyTotal.eur - data.gross.eur;
 
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="bg-slate-50 px-6 py-4 border-b border-slate-200">
-                <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                    Defalcare Costuri Angajat
+            <div className="bg-slate-50 px-6 py-3 border-b border-slate-200">
+                <h3 className="font-bold text-slate-800 text-xs uppercase tracking-widest">
+                    Analiză Detaliată Taxe
                 </h3>
             </div>
 
-            <div className="p-6 space-y-4">
-                {taxRows.map((row) => (
-                    <div key={row.label} className="flex justify-between items-center group">
-            <span className="text-sm text-slate-500 group-hover:text-slate-800 transition-colors">
-              {row.label}
-            </span>
-                        <div className="text-right">
-                            <div className={`font-mono font-semibold ${!row.neutral ? 'text-rose-500' : 'text-slate-600'}`}>
-                                {!row.neutral && "- "}{row.ron.toLocaleString('ro-RO')} <span className="text-[10px]">RON</span>
-                            </div>
-                            <div className="text-[10px] text-slate-400 font-medium italic">
-                                ≈ {row.eur.toLocaleString('de-DE')} EUR
-                            </div>
-                        </div>
-                    </div>
-                ))}
+            <div className="p-6 space-y-6">
+                {/* Employee Section */}
+                <BreakdownSection title="Deduceri Angajat">
+                    <BreakdownRow label="CAS (Pensie 25%)" ron={data.cas.ron} eur={data.cas.eur} type="negative" />
+                    <BreakdownRow label="CASS (Sănătate 10%)" ron={data.cass.ron} eur={data.cass.eur} type="negative" />
+                    <BreakdownRow label="Impozit pe Venit (10%)" ron={data.incomeTax.ron} eur={data.incomeTax.eur} type="negative" />
+                    {data.deduction.ron > 0 && (
+                        <BreakdownRow label="Deducere Personală" ron={data.deduction.ron} eur={data.deduction.eur} type="bonus" />
+                    )}
+                </BreakdownSection>
 
-                <div className="pt-4 border-t border-dashed border-slate-200 mt-2">
-                    <div className="flex justify-between items-center">
-                        <div className="space-y-1">
-                            <span className="text-sm font-bold text-slate-900">Cost Total Angajator</span>
-                            <p className="text-[10px] text-slate-400 uppercase tracking-tighter">(Salariu Complet / CAM inclus)</p>
-                        </div>
-                        <div className="text-right">
-                            <div className="font-mono font-black text-slate-900">
-                                {data.companyTotal.ron.toLocaleString('ro-RO')} <span className="text-xs">RON</span>
-                            </div>
-                            <div className="text-xs text-indigo-500 font-bold">
-                                {data.companyTotal.eur.toLocaleString('de-DE')} EUR
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <Separator className="opacity-50" />
+
+                {/* Employer Section */}
+                <BreakdownSection title="Costuri Angajator">
+                    <BreakdownRow label="Salariu Brut (Contract)" ron={data.gross.ron} eur={data.gross.eur} />
+                    <BreakdownRow label="CAM (Muncă 2.25%)" ron={camRon} eur={camEur} />
+                </BreakdownSection>
+
+                <TotalCostFooter total={data.companyTotal} />
             </div>
         </div>
     );

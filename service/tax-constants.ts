@@ -1,7 +1,3 @@
-export const EXCHANGE_RATES = {
-    EUR_RON: 4.97, // Use a fixed rate for MVP
-};
-
 export const TAX_RATES = {
     CAS: 0.25,      // Social Security (Pension)
     CASS: 0.10,     // Health Insurance

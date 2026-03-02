@@ -1,20 +1,20 @@
-import {TAX_RATES, FISCAL_2026, EXCHANGE_RATES} from './tax-constants';
+import {TAX_RATES, FISCAL_2026} from './tax-constants';
 import {CurrencyValue, SalaryBreakdown} from '@/types/tax';
 
-
 // Helper to convert RON to EUR
-const toCurrency = (ronValue: number): CurrencyValue => ({
+const toCurrency = (ronValue: number, eurExchangeRate: number): CurrencyValue => ({
     ron: Math.round(ronValue),
-    eur: Number((ronValue / EXCHANGE_RATES.EUR_RON).toFixed(2))
+    eur: Number((ronValue / eurExchangeRate).toFixed(2))
 });
 
 export const calculateFromGross = (
     amount: number,
-    currency: 'RON' | 'EUR' = 'RON',
+    exchangeRate: number,
+    eurExchangeRate: number,
     isH2: boolean = false
 ): SalaryBreakdown => {
     // 1. Normalize input to RON for calculation
-    const grossRon = currency === 'EUR' ? amount * EXCHANGE_RATES.EUR_RON : amount;
+    const grossRon = amount * exchangeRate;
 
     const period = isH2 ? FISCAL_2026.H2 : FISCAL_2026.H1;
     const appliesAllowance = grossRon >= period.MIN_WAGE && grossRon <= period.CEILING;
@@ -32,22 +32,23 @@ export const calculateFromGross = (
 
     // 2. Wrap all results in dual currency
     return {
-        gross: toCurrency(grossRon),
-        net: toCurrency(netRon),
-        cas: toCurrency(cas),
-        cass: toCurrency(cass),
-        incomeTax: toCurrency(incomeTax),
-        deduction: toCurrency(deduction),
-        companyTotal: toCurrency(companyTotalRon)
+        gross: toCurrency(grossRon, eurExchangeRate),
+        net: toCurrency(netRon, eurExchangeRate),
+        cas: toCurrency(cas, eurExchangeRate),
+        cass: toCurrency(cass, eurExchangeRate),
+        incomeTax: toCurrency(incomeTax, eurExchangeRate),
+        deduction: toCurrency(deduction, eurExchangeRate),
+        companyTotal: toCurrency(companyTotalRon, eurExchangeRate)
     };
 };
 
 export const calculateFromNet = (
     targetNet: number,
-    currency: 'RON' | 'EUR' = 'RON',
+    exchangeRate: number,
+    eurExchangeRate: number,
     isH2: boolean = false
 ): SalaryBreakdown => {
-    const targetNetRon = currency === 'EUR' ? targetNet * EXCHANGE_RATES.EUR_RON : targetNet;
+    const targetNetRon = targetNet;
 
     let low = targetNetRon;
     let high = targetNetRon * 2;
@@ -55,10 +56,10 @@ export const calculateFromNet = (
 
     for (let i = 0; i < 25; i++) {
         const mid = (low + high) / 2;
-        const currentNet = calculateFromGross(mid, 'RON', isH2).net.ron;
+        const currentNet = calculateFromGross(mid, exchangeRate, eurExchangeRate, isH2).net.ron;
         if (currentNet < targetNetRon) low = mid;
         else { high = mid; bestGross = mid; }
     }
 
-    return calculateFromGross(Math.round(bestGross), 'RON', isH2);
+    return calculateFromGross(Math.round(bestGross), exchangeRate, eurExchangeRate, isH2);
 };
