@@ -10,6 +10,8 @@ import { ResultCard } from "@/components/calculator/ResultCard";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import {ArrowRight, BookOpen} from "lucide-react";
+import Link from "next/link";
 
 export default function CalculatorPage() {
   // --- State ---
@@ -112,6 +114,28 @@ export default function CalculatorPage() {
               <TaxBreakdown data={results} />
             </div>
           </div>
+
+          {/* --- NEW BLOG LINK SECTION --- */}
+          <section className="pt-10 border-t border-slate-200">
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 hover:border-indigo-300 transition-all">
+              <div className="flex items-center gap-5">
+                <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+                  <BookOpen className="w-7 h-7" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-slate-900">Ghiduri Fiscale 2026</h3>
+                  <p className="text-slate-500">Află cum te afectează noile modificări legislative și cum poți optimiza taxele.</p>
+                </div>
+              </div>
+              <Link
+                  href="/blog"
+                  className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all group"
+              >
+                Citește Blogul
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </section>
         </div>
       </main>
   );
