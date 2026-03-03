@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {siteConfig} from "@/service/config";
 
 export const Footer = () => {
     const currentYear = new Date().getFullYear();
@@ -9,7 +10,7 @@ export const Footer = () => {
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                     {/* Brand & Rights */}
                     <div className="text-center md:text-left">
-                        <p className="text-slate-900 font-bold text-sm">Calculator Salariu RO</p>
+                        <p className="text-slate-900 font-bold text-sm"><a href={siteConfig.url}>Calculator Salariu RO</a></p>
                         <p className="text-slate-400 text-[10px] uppercase tracking-widest mt-1">
                             © {currentYear} • Toate drepturile rezervate
                         </p>

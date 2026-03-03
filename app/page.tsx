@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { calculateFromGross, calculateFromNet } from "@/service/tax-service";
 import { getExchangeRate } from "@/service/exchange-service";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { SalaryForm } from "@/components/calculator/SalaryForm";
 import { TaxBreakdown } from "@/components/calculator/TaxBreakdown";
 import { ResultCard } from "@/components/calculator/ResultCard";
@@ -53,8 +54,6 @@ export default function CalculatorPage() {
   // --- Memoized Calculation ---
   // We only re-run this heavy math when these specific dependencies change
   const results = useMemo(() => {
-    console.log(calculateFromGross(inputValue, exchangeRate, eurExchangeRate, isH2));
-    console.log(calculateFromNet(inputValue, exchangeRate, eurExchangeRate, isH2));
     return mode === "brut"
         ? calculateFromGross(inputValue, exchangeRate, eurExchangeRate, isH2)
         : calculateFromNet(inputValue, exchangeRate, eurExchangeRate, isH2);
@@ -62,6 +61,7 @@ export default function CalculatorPage() {
 
   return (
       <main className="min-h-screen bg-slate-50 py-12 px-4 md:px-8">
+        <JsonLd />
         <div className="max-w-5xl mx-auto space-y-10">
 
           {/* Header Section */}
