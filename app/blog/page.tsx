@@ -48,7 +48,7 @@ export default function BlogPage() {
                 {/* Hero Section */}
                 <header className="mb-16 text-center">
                     <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight mb-4">
-                        Blog Fiscal <span className="text-indigo-600">2026</span>
+                        Blog Fiscal <span className="text-indigo-600">{new Date().getFullYear()}</span>
                     </h1>
                     <p className="text-lg text-slate-500 max-w-2xl mx-auto">
                         Rămâi la curent cu toate modificările Codului Fiscal. Ghiduri practice pentru angajați și antreprenori.
@@ -60,7 +60,7 @@ export default function BlogPage() {
                     <div className="max-w-xl">
                         <h3 className="text-2xl font-bold mb-3">Vrei să afli salariul tău exact?</h3>
                         <p className="text-indigo-100 mb-6">
-                            Folosește calculatorul nostru actualizat conform legislației din 2026 pentru a vedea exact câți bani primești în mână după taxe și deduceri.
+                            Folosește calculatorul nostru actualizat conform legislației din {new Date().getFullYear()} pentru a vedea exact câți bani primești în mână după taxe și deduceri.
                         </p>
                         <Link
                             href="/"

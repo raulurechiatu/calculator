@@ -18,7 +18,7 @@ export default function TermsPage() {
 
                     <h2 className="text-xl font-bold">2. Exonerare de Răspundere</h2>
                     <div className="bg-amber-50 border-l-4 border-amber-400 p-4 italic text-amber-900">
-                        Calculele oferite sunt simulări bazate pe legislația fiscală din 2026 și au scop informativ. Calculator Salariu RO nu oferă consultanță financiară sau juridică. Nu ne asumăm răspunderea pentru erori de calcul sau decizii luate pe baza acestor date.
+                        Calculele oferite sunt simulări bazate pe legislația fiscală din {new Date().getFullYear()} și au scop informativ. Calculator Salariu RO nu oferă consultanță financiară sau juridică. Nu ne asumăm răspunderea pentru erori de calcul sau decizii luate pe baza acestor date.
                     </div>
 
                     <h2 className="text-xl font-bold">3. Modificări</h2>

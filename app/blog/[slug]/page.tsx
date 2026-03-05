@@ -203,7 +203,7 @@ export default async function PostPage(props: { params: Promise<{ slug: string }
                     <div className="max-w-xl">
                         <h3 className="text-2xl font-bold mb-3">Vrei să afli salariul tău exact?</h3>
                         <p className="text-indigo-100 mb-6 text-sm">
-                            Folosește calculatorul nostru actualizat conform legislației din 2026 pentru a vedea exact câți bani primești în mână după taxe și deduceri.
+                            Folosește calculatorul nostru actualizat conform legislației din {new Date().getFullYear()} pentru a vedea exact câți bani primești în mână după taxe și deduceri.
                         </p>
                         <Link
                             href="/"
