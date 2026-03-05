@@ -5,6 +5,7 @@ import {CookieConsent} from "@/components/ui/CookieConsent";
 import {Footer} from "@/components/layout/Footer";
 import Script from "next/script";
 import {siteConfig} from "@/service/config";
+import {AdBlockDetector} from "@/components/ads/AdBlockDetector";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,9 +68,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <meta name="google-adsense-account" content="ca-pub-5072803047179041"/>
         </head>
         <body>
-        {children}
-        <Footer/>
-        <CookieConsent />
+            {children}
+            <AdBlockDetector /> {/* It only renders if AdBlock is detected */}
+            <Footer/>
+            <CookieConsent />
         </body>
         </html>
     );
