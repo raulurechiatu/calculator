@@ -133,8 +133,51 @@ export default function CalculatorPage() {
             </div>
           </div>
 
-          {/* Blog Footer Section */}
+          {/* Explanatory Content Section — how the calculation works */}
           <section className="pt-10 border-t border-slate-200">
+            <div className="bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 shadow-sm space-y-6">
+              <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+                Cum se calculează salariul net în România în {new Date().getFullYear()}?
+              </h2>
+              <p className="text-slate-600 leading-relaxed">
+                Diferența dintre salariul brut trecut în contract și suma care ajunge efectiv în cont este
+                dată de trei rețineri obligatorii, aplicate de angajator direct pe statul de plată:
+                Contribuția de Asigurări Sociale (<strong>CAS</strong>, 25%, destinată pensiei), Contribuția
+                de Asigurări Sociale de Sănătate (<strong>CASS</strong>, 10%) și impozitul pe venit
+                (<strong>10%</strong>, calculat după deducerea CAS și CASS din baza de calcul). La acestea se
+                adaugă, pentru angajator, Contribuția Asiguratorie pentru Muncă (CAM, 2,25%), care nu se scade
+                din salariul angajatului, dar mărește costul total suportat de firmă.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100">
+                  <p className="text-xs font-black uppercase tracking-widest text-indigo-600 mb-1">CAS — Pensie</p>
+                  <p className="text-sm text-slate-600">25% din brut, direcționat spre pensia publică și, parțial, spre Pilonul II de pensii private.</p>
+                </div>
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100">
+                  <p className="text-xs font-black uppercase tracking-widest text-indigo-600 mb-1">CASS — Sănătate</p>
+                  <p className="text-sm text-slate-600">10% din brut, către sistemul public de asigurări de sănătate.</p>
+                </div>
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100">
+                  <p className="text-xs font-black uppercase tracking-widest text-indigo-600 mb-1">Impozit pe Venit</p>
+                  <p className="text-sm text-slate-600">10%, aplicat pe baza rămasă după scăderea CAS, CASS și a deducerii personale.</p>
+                </div>
+              </div>
+              <p className="text-slate-600 leading-relaxed">
+                Angajații care au copii în întreținere sau sunt sub 26 de ani pot beneficia și de o{" "}
+                <Link href="/blog/deduceri-personale-2026" className="text-indigo-600 underline font-medium">
+                  deducere personală
+                </Link>, care reduce suplimentar baza de calcul a impozitului. Calculatorul de mai sus aplică
+                automat toate aceste reguli, actualizate conform pragurilor fiscale din {new Date().getFullYear()},
+                inclusiv modificarea salariului minim intrată în vigoare din iulie. Pentru o analiză detaliată a
+                fiecărei componente, sau pentru situații particulare (bonusuri, tichete de masă, concediu medical,
+                muncă remote sau colaborare cu firme din străinătate), consultă ghidurile din{" "}
+                <Link href="/blog" className="text-indigo-600 underline font-medium">secțiunea de blog</Link>.
+              </p>
+            </div>
+          </section>
+
+          {/* Blog Footer Section */}
+          <section className="pt-2">
             <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 hover:border-indigo-300 transition-all">
               <div className="flex items-center gap-5">
                 <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
