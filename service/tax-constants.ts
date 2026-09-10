@@ -24,8 +24,16 @@ export const FISCAL_2026 = {
     }
 };
 
-// Simplified Personal Deduction Table (Common for MVP)
+/**
+ * Personal Deduction (Deducere personala) - no dependents.
+ * Per Codul Fiscal art. 77^1 (OG 16/2022, amended by OUG 115/2023):
+ * max deduction = 20% of the national minimum gross wage, reduced by
+ * 0.5 percentage points for every 50 RON the gross salary exceeds
+ * that minimum wage, reaching 0 once it exceeds it by PHASE_OUT_RON.
+ */
 export const PERSONAL_DEDUCTION = {
-    BASE: 510,
-    MAX_SALARY_THRESHOLD: 6000,
+    BASE_PERCENT: 0.20,
+    STEP_RON: 50,
+    STEP_PERCENT: 0.005,
+    PHASE_OUT_RON: 2000,
 };
