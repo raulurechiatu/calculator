@@ -1,12 +1,22 @@
 // service/tax-service.ts
 import {CurrencyValue, SalaryBreakdown} from "@/types/tax";
-import {FISCAL_2026, TAX_RATES} from "@/service/tax-constants";
+import {FISCAL_2026, PERSONAL_DEDUCTION, TAX_RATES} from "@/service/tax-constants";
 
 // Helper to convert RON to EUR
 const toCurrency = (ronValue: number, eurExchangeRate: number): CurrencyValue => ({
     ron: Math.round(ronValue),
     eur: Number((ronValue / eurExchangeRate).toFixed(2))
 });
+
+// Personal Deduction (no dependents) - see service/tax-constants.ts for the legal basis
+const calculatePersonalDeduction = (grossRon: number, minWage: number): number => {
+    const delta = Math.max(0, grossRon - minWage);
+    if (delta >= PERSONAL_DEDUCTION.PHASE_OUT_RON) return 0;
+
+    const steps = Math.floor(delta / PERSONAL_DEDUCTION.STEP_RON);
+    const percent = Math.max(0, PERSONAL_DEDUCTION.BASE_PERCENT - steps * PERSONAL_DEDUCTION.STEP_PERCENT);
+    return Math.round(minWage * percent);
+};
 
 export const calculateFromGross = (
     amount: number,
@@ -19,15 +29,16 @@ export const calculateFromGross = (
 
     const period = isH2 ? FISCAL_2026.H2 : FISCAL_2026.H1;
     const appliesAllowance = grossRon >= period.MIN_WAGE && grossRon <= period.CEILING;
+    const allowance = appliesAllowance ? period.TAX_FREE_AMOUNT : 0;
 
-    // Taxes
-    const cas = Math.round(grossRon * TAX_RATES.CAS);
-    const cass = Math.round(grossRon * TAX_RATES.CASS);
+    // Taxes - the minimum-wage allowance (OUG 89/2025) reduces the CAS/CASS base too, not just income tax
+    const cas = Math.round((grossRon - allowance) * TAX_RATES.CAS);
+    const cass = Math.round((grossRon - allowance) * TAX_RATES.CASS);
 
-    // Personal Deduction (Deducere personala) - Logic depends on Gross
-    const deduction = grossRon <= 6000 ? 510 : 0;
+    // Personal Deduction (Deducere personala) - no dependents
+    const deduction = calculatePersonalDeduction(grossRon, period.MIN_WAGE);
 
-    const taxableIncome = Math.max(0, grossRon - cas - cass - deduction - (appliesAllowance ? period.TAX_FREE_AMOUNT : 0));
+    const taxableIncome = Math.max(0, grossRon - cas - cass - deduction - allowance);
     const incomeTax = Math.round(taxableIncome * TAX_RATES.INCOME_TAX);
 
     const netRon = grossRon - cas - cass - incomeTax;
