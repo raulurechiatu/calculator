@@ -27,6 +27,9 @@ export const Footer = () => {
                         <Link href="/blog" className="text-indigo-600 hover:text-indigo-700 transition-colors">
                             Blog
                         </Link>
+                        <Link href="/despre" className="text-indigo-600 hover:text-indigo-700 transition-colors">
+                            Despre Noi
+                        </Link>
 
                         {/* Divider for Desktop */}
                         <span className="hidden md:block text-slate-200">|</span>
